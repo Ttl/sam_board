@@ -1,0 +1,84 @@
+/*
+ * at91sam9n12ek.dts - Device Tree file for AT91SAM9N12-EK board
+ *
+ *  Copyright (C) 2012 Atmel,
+ *                2012 Hong Xu <hong.xu@atmel.com>
+ *
+ * Licensed under GPLv2 or later.
+ */
+/dts-v1/;
+#include "at91sam9n12.dtsi"
+
+/ {
+	model = "Atmel AT91SAM9N12-EK";
+	compatible = "atmel,at91sam9n12ek", "atmel,at91sam9n12", "atmel,at91sam9";
+
+    chosen {
+		bootargs = "mem=64M console=ttyS0,115200 mtdparts=atmel_nand:8M(bootstrap/kernel)ro,-(rootfs) rw rootfstype=ubifs ubi.mtd=1 root=ubi0:rootfs";
+	};
+
+	memory {
+		reg = <0x20000000 0x8000000>;
+	};
+
+	clocks {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		main_clock: clock@0 {
+			compatible = "atmel,osc", "fixed-clock";
+			clock-frequency = <16000000>;
+		};
+	};
+
+	ahb {
+		apb {
+			dbgu: serial@fffff200 {
+				status = "okay";
+			};
+
+			ssc0: ssc@f0010000 {
+				status = "disabled";
+			};
+
+			i2c0: i2c@f8010000 {
+				status = "disabled";
+			};
+
+			i2c1: i2c@f8014000 {
+				status = "disabled";
+			};
+
+			mmc0: mmc@f0008000 {
+				status = "disabled";
+			};
+
+			spi0: spi@f0000000 {
+				status = "disabled";
+				cs-gpios = <&pioA 14 0>, <0>, <0>, <0>;
+			};
+
+			watchdog@fffffe40 {
+				status = "okay";
+			};
+
+		};
+
+		nand0: nand@40000000 {
+			nand-bus-width = <8>;
+			nand-ecc-mode = "hw";
+			atmel,has-pmecc;
+			atmel,pmecc-cap = <4>;
+			atmel,pmecc-sector-size = <512>;
+			nand-on-flash-bbt;
+			status = "okay";
+		};
+
+		usb0: ohci@00500000 {
+			status = "okay";
+		};
+
+
+	};
+};

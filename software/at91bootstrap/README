@@ -1,0 +1,11 @@
+This patch and config file are from AT91 bootstrap git commit:
+
+commit 84e12b6022465239f6fa8ad32a0335160277c355
+Merge: bb28bd5 80e9f74
+Author: Nicolas Ferre <noglitch@free.fr>
+Date:   Tue Jul 1 16:52:37 2014 +0200
+
+    Merge pull request #7 from voiceshen/voice/fix_div
+    
+    lib: div: remove check for dividend is 0x80000000
+

@@ -1,0 +1,46 @@
+diff --git a/board/at91sam9n12ek/at91sam9n12ek.c b/board/at91sam9n12ek/at91sam9n12ek.c
+index 53d666f..b0e57e5 100644
+--- a/board/at91sam9n12ek/at91sam9n12ek.c
++++ b/board/at91sam9n12ek/at91sam9n12ek.c
+@@ -79,7 +79,7 @@ static void ddramc_reg_config(struct ddramc_register *ddramc_config)
+ 	ddramc_config->cr = (AT91C_DDRC2_NC_DDR10_SDR9	// 10 column bits (1K)
+ 				| AT91C_DDRC2_NR_13	// 13 row bits    (8K)
+ 				| AT91C_DDRC2_CAS_3	// CAS Latency 3
+-				| AT91C_DDRC2_NB_BANKS_8	// 8 banks
++				| AT91C_DDRC2_NB_BANKS_4	// 4 banks
+ 				| AT91C_DDRC2_DLL_RESET_DISABLED	// DLL not reset
+ 				| AT91C_DDRC2_DECOD_INTERLEAVED);	// Interleaved decoding
+ 
+@@ -108,7 +108,7 @@ static void ddramc_reg_config(struct ddramc_register *ddramc_config)
+ 
+ 	ddramc_config->t2pr = (AT91C_DDRC2_TRTP_2	//  2 clock cycles min
+ 				| AT91C_DDRC2_TRPA_3	//  3 * 7.5 = 22.5 ns
+-				| AT91C_DDRC2_TXARDS_7 	//  7 clock cycles
++				| AT91C_DDRC2_TXARDS_8 	//  8 clock cycles
+ 				| AT91C_DDRC2_TXARD_2);	//  2 clock cycles
+ }
+ 
+@@ -260,13 +260,20 @@ void nandflash_hw_init(void)
+ 		{"NANDALE",	AT91C_PIN_PD(2), 0,		PIO_PULLUP, PIO_PERIPH_A},
+ 		{"NANDCLE",	AT91C_PIN_PD(3), 0,		PIO_PULLUP, PIO_PERIPH_A},
+ 		{"NANDCS",	CONFIG_SYS_NAND_ENABLE_PIN,	1, PIO_PULLUP, PIO_OUTPUT},
++		{"D16",	AT91C_PIN_PD(6), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D17",	AT91C_PIN_PD(7), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D18",	AT91C_PIN_PD(8), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D19",	AT91C_PIN_PD(9), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D20",	AT91C_PIN_PD(10), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D21",	AT91C_PIN_PD(11), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D22",	AT91C_PIN_PD(12), 0,		PIO_PULLUP, PIO_PERIPH_A},
++		{"D23",	AT91C_PIN_PD(13), 0,		PIO_PULLUP, PIO_PERIPH_A},
+ 		{(char *)0,	0, 0, PIO_DEFAULT, PIO_PERIPH_A},
+ 	};
+-
+ 	reg = readl(AT91C_BASE_CCFG + CCFG_EBICSA);
+ 	reg |= AT91C_EBI_CS3A_SM;
+ 
+-	reg &= ~AT91C_EBI_NFD0_ON_D16;	/* nandflash connect to D0~D15 */
++	reg |= AT91C_EBI_NFD0_ON_D16;	/* nandflash connect to D16~D23 */
+ 
+ 	reg |= AT91C_EBI_DRV;	/* according to IAR verification package */
+ 	writel(reg, AT91C_BASE_CCFG + CCFG_EBICSA);
+
