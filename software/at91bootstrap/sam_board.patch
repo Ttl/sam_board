@@ -1,5 +1,5 @@
 diff --git a/board/at91sam9n12ek/at91sam9n12ek.c b/board/at91sam9n12ek/at91sam9n12ek.c
-index 53d666f..b0e57e5 100644
+index 53d666f..2dba37d 100644
 --- a/board/at91sam9n12ek/at91sam9n12ek.c
 +++ b/board/at91sam9n12ek/at91sam9n12ek.c
 @@ -79,7 +79,7 @@ static void ddramc_reg_config(struct ddramc_register *ddramc_config)
@@ -11,15 +11,49 @@ index 53d666f..b0e57e5 100644
  				| AT91C_DDRC2_DLL_RESET_DISABLED	// DLL not reset
  				| AT91C_DDRC2_DECOD_INTERLEAVED);	// Interleaved decoding
  
-@@ -108,7 +108,7 @@ static void ddramc_reg_config(struct ddramc_register *ddramc_config)
+@@ -89,27 +89,27 @@ static void ddramc_reg_config(struct ddramc_register *ddramc_config)
+ 	 * set with (15.625 x 133 MHz) ~ 2084 i.e. 0x824
+ 	 * or (7.81 x 133 MHz) ~ 1040 i.e. 0x410.
+ 	 */
+-	ddramc_config->rtr = 0x411;	/* Refresh timer: 7.8125us */
+-
+-	/* One clock cycle @ 133 MHz = 7.5 ns */
+-	ddramc_config->t0pr = (AT91C_DDRC2_TRAS_6 	//  6 * 7.5 = 45   ns
+-				| AT91C_DDRC2_TRCD_2 	//  2 * 7.5 = 22.5 ns
+-				| AT91C_DDRC2_TWR_2 	//  2 * 7.5 = 15   ns
+-				| AT91C_DDRC2_TRC_8 	//  8 * 7.5 = 75   ns
+-				| AT91C_DDRC2_TRP_2 	//  2 * 7.5 = 15   ns
+-				| AT91C_DDRC2_TRRD_2 	//  2 * 7.5 = 15   ns (x16 memory)
++	ddramc_config->rtr = 0x30D;	/* Refresh timer: 7.8125us */
++
++	/* One clock cycle @ 100 MHz = 10 ns */
++	ddramc_config->t0pr = (AT91C_DDRC2_TRAS_5 	//  5 * 10 = 50   ns
++				| AT91C_DDRC2_TRCD_2 	//  2 * 10 = 20 ns
++				| AT91C_DDRC2_TWR_2 	//  2 * 10 = 20   ns
++				| AT91C_DDRC2_TRC_6 	//  6 * 10 = 60   ns
++				| AT91C_DDRC2_TRP_2 	//  2 * 10 = 20   ns
++				| AT91C_DDRC2_TRRD_1 	//  1 * 10 = 10   ns
+ 				| AT91C_DDRC2_TWTR_2 	//  2 clock cycles min
+ 				| AT91C_DDRC2_TMRD_2);	//  2 clock cycles
+ 
+ 	ddramc_config->t1pr = (AT91C_DDRC2_TXP_2 //  2 clock cycles
+-				| 200 << 16 	//  200 clock cycles
+-				| 19 << 8 	//  19 * 7.5 = 142.5 ns ( > 128 + 10 ns)
+-				| AT91C_DDRC2_TRFC_18);	//  18 * 7.5 = 135   ns (must be 128 ns for 1Gb DDR)
++				| 200 << 16 	// TXSRD, 200 clock cycles
++				| 12 << 8 	//  TXSNR, 12 * 10 = 120 ns
++				| AT91C_DDRC2_TRFC_11);	//  11 * 10 = 110 ns
  
  	ddramc_config->t2pr = (AT91C_DDRC2_TRTP_2	//  2 clock cycles min
- 				| AT91C_DDRC2_TRPA_3	//  3 * 7.5 = 22.5 ns
+-				| AT91C_DDRC2_TRPA_3	//  3 * 7.5 = 22.5 ns
 -				| AT91C_DDRC2_TXARDS_7 	//  7 clock cycles
+-				| AT91C_DDRC2_TXARD_2);	//  2 clock cycles
++				| AT91C_DDRC2_TRPA_2	//  2 * 10 = 20 ns
 +				| AT91C_DDRC2_TXARDS_8 	//  8 clock cycles
- 				| AT91C_DDRC2_TXARD_2);	//  2 clock cycles
++				| AT91C_DDRC2_TXARD_3);	//  3 clock cycles
  }
  
+ static void ddramc_init(void)
 @@ -260,13 +260,20 @@ void nandflash_hw_init(void)
  		{"NANDALE",	AT91C_PIN_PD(2), 0,		PIO_PULLUP, PIO_PERIPH_A},
  		{"NANDCLE",	AT91C_PIN_PD(3), 0,		PIO_PULLUP, PIO_PERIPH_A},
@@ -43,4 +77,28 @@ index 53d666f..b0e57e5 100644
  
  	reg |= AT91C_EBI_DRV;	/* according to IAR verification package */
  	writel(reg, AT91C_BASE_CCFG + CCFG_EBICSA);
+diff --git a/board/at91sam9n12ek/at91sam9n12ek.h b/board/at91sam9n12ek/at91sam9n12ek.h
+index 30f9fa4..9acf17e 100644
+--- a/board/at91sam9n12ek/at91sam9n12ek.h
++++ b/board/at91sam9n12ek/at91sam9n12ek.h
+@@ -35,16 +35,16 @@
+  * and MCK is switched on the main oscillator.                                  
+  * PLL initialization is done later in the hw_init() function
+  */
+-#define MASTER_CLOCK		(132096000)
++#define MASTER_CLOCK		(100000000)
+ #define PLL_LOCK_TIMEOUT	10000
+ 
+ #define BOARD_MAINOSC		16000000
+-#define BOARD_MCK		133000000
++#define BOARD_MCK		100000000
+ #define BOARD_OSCOUNT		(AT91C_CKGR_OSCOUNT & (64 << 8))
+ #define BOARD_CKGR_PLLA		(AT91C_CKGR_SRCA | AT91C_CKGR_OUTA_0)
+ #define BOARD_PLLACOUNT		(0x3F << 8)
+ //#define BOARD_MULA		(AT91C_CKGR_MULA & (199 << 16))
+-#define BOARD_MULA		(AT91C_CKGR_MULA & (149 << 16))
++#define BOARD_MULA		(AT91C_CKGR_MULA & (112 << 16))
+ #define BOARD_DIVA		(AT91C_CKGR_DIVA & 3)
+ 
+ #define BOARD_PRESCALER_MAIN_CLOCK	(AT91C_PMC_PLLADIV2_2 \
 
