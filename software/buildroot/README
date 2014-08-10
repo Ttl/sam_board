@@ -1,2 +1,3 @@
-Buildroot version used: 2014.02
+Buildroot version used: 2014.05
 
+To use copy files to buildroot root and rename "config-buildroot" to ".config".
