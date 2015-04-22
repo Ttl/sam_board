@@ -1,3 +1,6 @@
 Hardware and software files for AT91SAM9N12 base ARM Linux custom board.
 
+"component_order.csv" has a list of components that I ordered the board.
+There are few extra components for cheap ones.
+
 For more information: http://hforsten.com/making-embedded-linux-computer.html
